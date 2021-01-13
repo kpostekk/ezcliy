@@ -1,64 +1,82 @@
-import re
 import sys
+from functools import cache
+from typing import Optional
+
 from ezcliy.arguements import Flag, Argument
-from typing import Optional, Iterable
 
 
 class Command:
     name: Optional[str]
     description: Optional[str]
-    values: list[str]
+    values: list[str] = []
 
-    # Get commands
-    def get_commands_bindings(self) -> dict[str, type]:
-        commands = []
-        for name in dir(self):
-            v = self.__getattribute__(name)
-            if isinstance(v, type) and name != '__class__':
-                if issubclass(v, Command):
-                    commands.append(v)
+    @property
+    @cache
+    def commands(self) -> dict[str, type]:
+        cmds = dict()
+        cmds.update(
+            *[{o().name: o} for o in self.__class__.__dict__.values() if isinstance(o, type) if issubclass(o, Command)]
+        )
+        return cmds
 
-        bindings = {}
-        for command in commands:
-            bindings.update({command().name: command})
+    @property
+    @cache
+    def arguments(self) -> dict[str, Argument]:
+        fields = dict()
+        fields.update(
+            *[{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
+              isinstance(self.__class__.__dict__.get(o), Argument)]
+        )
+        return fields
 
-        return bindings
+    def dispatch(self, args: list[str]):
+        # Shrink requested arguments
+        for arguments, name in [(self.arguments.get(a), a) for a in self.arguments]:
+            args = arguments.pass_args(args)
 
-    # Argument processing
-    def push_args(self, user_args: list[str]):
-        for attr in [self.__getattribute__(name) for name in dir(self)]:
-            if isinstance(attr, Argument):
-                user_args = attr.pass_args(user_args)
+        # Saved shrinked args
+        self.values = [arg for arg in args if not arg.startswith('-')]
 
-        self.values = user_args
+        # Check is first arg an command
         if len(self.values) > 0:
-            if self.values[0] in self.get_commands_bindings().keys():
-                cmd: Command = self.get_commands_bindings().get(self.values[0])()
-                cmd.push_args(self.values[1:])
-
-        self.invoke()
+            if self.values[0] in self.commands.keys():
+                # Shrink values
+                cmd_name, self.values = self.values[0], self.values[1:]
+                # Invoke, has args, first is subcommand
+                self.invoke()
+                # Prepare subcommand
+                cmd: Command = self.commands.get(cmd_name)()
+                cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
+            else:
+                self.invoke()  # Has args, first isn't subcommand
+        else:
+            self.invoke()  # Has no args
 
     # Invocation
-    def invoke(self): ...
+    def invoke(self):
+        ...
 
     # Entry points
     def cli_entry(self):
-        self.push_args(sys.argv[1:])
+        self.dispatch(sys.argv[1:])
 
     def local_entry(self, *args: str):
         # noinspection PyTypeChecker
-        self.push_args(args)
+        self.dispatch(args)
 
 
 if __name__ == '__main__':
-    class Test(Command):
-        class StringOps(Command):
-            name = 'string'
+    class APT(Command):
+        verbose = Flag('-v', '--verbose')
 
-            class StringUpper(Command):
-                name = 'up'
+        class Install(Command):
+            name = 'install'
 
-                def invoke(self):
-                    print(' '.join(self.values).upper())
+            def invoke(self):
+                for val in self.values:
+                    print(f'Installing {val}...')
+                print('Done!')
 
-    Test().local_entry('string', 'up', 'hdajsk', 'hdasjikdhasjk')
+
+    # print(APT().commands, APT().arguments)
+    APT().local_entry(*'-s -a install python3 python-pip --verbose'.split(' '))

@@ -9,6 +9,7 @@ class Command:
     name: Optional[str]
     description: Optional[str]
     values: list[str] = []
+    legacy: dict[str, Argument] = {}
 
     @property
     @cache
@@ -30,6 +31,11 @@ class Command:
         return fields
 
     def dispatch(self, args: list[str]):
+        # Loading legacy arguments
+        for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Argument)]:
+            if n in self.legacy:
+                self.__setattr__(n, self.legacy.get(n))
+
         # Shrink requested arguments
         for arguments, name in [(self.arguments.get(a), a) for a in self.arguments]:
             args = arguments.pass_args(args)
@@ -46,6 +52,7 @@ class Command:
                 self.invoke()
                 # Prepare subcommand
                 cmd: Command = self.commands.get(cmd_name)()
+                cmd.legacy = self.arguments  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
             else:
                 self.invoke()  # Has args, first isn't subcommand
@@ -69,14 +76,17 @@ if __name__ == '__main__':
     class APT(Command):
         verbose = Flag('-v', '--verbose')
 
+        def invoke(self):
+            if self.verbose:
+                print('APT version 3.0')
+
         class Install(Command):
             name = 'install'
+            verbose: Flag
 
             def invoke(self):
                 for val in self.values:
                     print(f'Installing {val}...')
                 print('Done!')
 
-
-    # print(APT().commands, APT().arguments)
     APT().local_entry(*'-s -a install python3 python-pip --verbose'.split(' '))

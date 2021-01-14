@@ -3,21 +3,21 @@ from typing import Optional, Iterable, Sized
 
 
 class Argument:
-    value: object
+    value: object = None
 
-    def pass_args(self, user_args: Iterable[str]) -> Iterable[str]: ...
+    def pass_args(self, user_args: list[str]) -> list[str]: ...
 
     def __str__(self):
         return str(self.value)
 
 
 class Flag(Argument):
-    value: bool
+    value: bool = False
 
     def __init__(self, *aliases: str):
         self.aliases = aliases
 
-    def pass_args(self, user_args: Iterable[str]) -> Iterable[str]:
+    def pass_args(self, user_args: list[str]) -> list[str]:
         shrinked_args = [arg for arg in user_args if arg not in self.aliases]
         # noinspection PyTypeChecker
         self.value = len(shrinked_args) != len(user_args)

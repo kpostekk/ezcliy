@@ -15,20 +15,19 @@ class Command:
     @cache
     def commands(self) -> dict[str, type]:
         cmds = dict()
-        cmds.update(
-            *[{o().name: o} for o in self.__class__.__dict__.values() if isinstance(o, type) if issubclass(o, Command)]
-        )
+        for pair in [{o().name: o} for o in self.__class__.__dict__.values() if isinstance(o, type) if
+                     issubclass(o, Command)]:
+            cmds.update(pair)
         return cmds
 
     @property
     @cache
     def arguments(self) -> dict[str, Argument]:
-        fields = dict()
-        fields.update(
-            *[{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
-              isinstance(self.__class__.__dict__.get(o), Argument)]
-        )
-        return fields
+        arg_fields = dict()
+        for field in [{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
+                      isinstance(self.__class__.__dict__.get(o), Argument)]:
+            arg_fields.update(field)
+        return arg_fields
 
     def dispatch(self, args: list[str]):
         # Loading legacy arguments

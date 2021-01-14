@@ -26,6 +26,8 @@ class Flag(Argument):
     def __bool__(self):
         return self.value
 
+    def __repr__(self):
+        return f'<Flag {" ".join(self.aliases)} has value {self.value}>'
 
 class KeyVal(Argument):
     pass

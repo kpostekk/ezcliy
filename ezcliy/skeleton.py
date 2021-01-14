@@ -2,7 +2,7 @@ import sys
 from functools import cache
 from typing import Optional
 
-from ezcliy.arguements import Flag, Argument
+from ezcliy.arguements import Argument
 
 
 class Command:
@@ -66,6 +66,6 @@ class Command:
     def cli_entry(self):
         self.dispatch(sys.argv[1:])
 
-    def local_entry(self, *args: str):
+    def local_entry(self, *args: str):  # Only for dev purposes
         # noinspection PyTypeChecker
         self.dispatch(args)

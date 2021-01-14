@@ -70,23 +70,3 @@ class Command:
     def local_entry(self, *args: str):
         # noinspection PyTypeChecker
         self.dispatch(args)
-
-
-if __name__ == '__main__':
-    class APT(Command):
-        verbose = Flag('-v', '--verbose')
-
-        def invoke(self):
-            if self.verbose:
-                print('APT version 3.0')
-
-        class Install(Command):
-            name = 'install'
-            verbose: Flag
-
-            def invoke(self):
-                for val in self.values:
-                    print(f'Installing {val}...')
-                print('Done!')
-
-    APT().local_entry(*'-s -a install python3 python-pip --verbose'.split(' '))

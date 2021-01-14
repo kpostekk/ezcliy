@@ -29,5 +29,28 @@ class Flag(Argument):
     def __repr__(self):
         return f'<Flag {" ".join(self.aliases)} has value {self.value}>'
 
+
 class KeyVal(Argument):
-    pass
+    value: str = None
+
+    def __init__(self, keyname: str):
+        self.key = keyname
+
+    def pass_args(self, user_args: list[str]) -> list[str]:
+        regex_rule = r'--{}[=|\ ]\"?([^-][\w.,]*)\"?'.format(self.key)
+        regex_match = re.search(regex_rule, ' '.join(user_args))
+
+        if regex_match is None:
+            return user_args
+
+        self.value = regex_match.groups()[0]
+        kv_with_eq, kv_with_sp = f'--{self.key}={self.value}', f'--{self.key}'
+        if kv_with_eq in user_args:
+            user_args.remove(kv_with_eq)
+        elif kv_with_sp in user_args:
+            user_args.remove(kv_with_sp)
+            user_args.remove(self.value)
+        return user_args
+
+    def __repr__(self):
+        return f'<Value of {self.key} has value {self.value}>'

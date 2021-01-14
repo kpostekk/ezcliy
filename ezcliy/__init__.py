@@ -1,4 +1,4 @@
-from ezcliy.arguements import Flag, KeyVal
-from ezcliy.skeleton import Command
+from ezcliy.parameters import Flag, KeyVal
+from ezcliy.commands import Command
 
 __version__ = '0.1.0'

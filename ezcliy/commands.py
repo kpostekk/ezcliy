@@ -2,14 +2,14 @@ import sys
 from functools import cache
 from typing import Optional
 
-from ezcliy.arguements import Argument
+from ezcliy.parameters import Parameter
 
 
 class Command:
     name: Optional[str]
     description: Optional[str]
     values: list[str] = []
-    legacy: dict[str, Argument] = {}
+    legacy: dict[str, Parameter] = {}
 
     @property
     @cache
@@ -22,24 +22,24 @@ class Command:
 
     @property
     @cache
-    def arguments(self) -> dict[str, Argument]:
-        arg_fields = dict()
-        for field in [{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
-                      isinstance(self.__class__.__dict__.get(o), Argument)]:
-            arg_fields.update(field)
-        return arg_fields
+    def parameters(self) -> dict[str, Parameter]:
+        params_fields = dict()
+        for param_fields in [{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
+                             isinstance(self.__class__.__dict__.get(o), Parameter)]:
+            params_fields.update(param_fields)
+        return params_fields
 
     def dispatch(self, args: list[str]):
-        # Loading legacy arguments
-        for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Argument)]:
+        # Loading predecessor's parameters
+        for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
             if n in self.legacy:
                 self.__setattr__(n, self.legacy.get(n))
 
-        # Shrink requested arguments
-        for arguments, name in [(self.arguments.get(a), a) for a in self.arguments]:
+        # Shrink requested parameters
+        for arguments, name in [(self.parameters.get(a), a) for a in self.parameters]:
             args = arguments.pass_args(args)
 
-        # Saved shrinked args
+        # Save cleaned values
         self.values = [arg for arg in args if not arg.startswith('-')]
 
         # Check is first arg an command
@@ -51,7 +51,7 @@ class Command:
                 self.invoke()
                 # Prepare subcommand
                 cmd: Command = self.commands.get(cmd_name)()
-                cmd.legacy = self.arguments  # Passing aquired flags
+                cmd.legacy = self.parameters  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
             else:
                 self.invoke()  # Has args, first isn't subcommand

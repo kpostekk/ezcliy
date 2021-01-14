@@ -2,12 +2,13 @@
 A hassle free framework for creating commandline tools
 
 ## Fast example
+
 ```python
 from ezcliy import Command, Flag  # Import required classes
 
 
 class SmallTextProcessor(Command):
-    # Define excpected arguments
+    # Define excpected parameters
     capitalize = Flag('-c', '--capitalize')
     verbose = Flag('--verbose')
 
@@ -15,7 +16,7 @@ class SmallTextProcessor(Command):
         string = ' '.join(self.values)
 
         if self.verbose:
-            print('Verbose stuff', self.arguments, self.values)
+            print('Verbose stuff', self.parameters, self.values)
 
         if self.capitalize:
             string = string.capitalize()

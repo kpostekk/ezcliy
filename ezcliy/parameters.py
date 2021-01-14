@@ -1,7 +1,7 @@
 import re
 
 
-class Argument:
+class Parameter:
     value: object = None
 
     def pass_args(self, user_args: list[str]) -> list[str]: ...
@@ -10,7 +10,7 @@ class Argument:
         return str(self.value)
 
 
-class Flag(Argument):
+class Flag(Parameter):
     value: bool = False
 
     def __init__(self, *aliases: str):
@@ -29,7 +29,7 @@ class Flag(Argument):
         return f'<Flag {" ".join(self.aliases)} has value {self.value}>'
 
 
-class KeyVal(Argument):
+class KeyVal(Parameter):
     value: str = None
 
     def __init__(self, keyname: str):

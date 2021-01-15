@@ -2,8 +2,12 @@ import sys
 from functools import cache
 from typing import Optional
 
+import colorama
+import yaml
+
 from ezcliy.parameters import Parameter
 from ezcliy.positional import Positional
+from ezcliy.exceptions import MessageableException
 
 
 class Command:
@@ -76,8 +80,23 @@ class Command:
 
     # Entry points
     def cli_entry(self):
-        self.dispatch(sys.argv[1:])
+        try:
+            self.dispatch(sys.argv[1:])
+        except MessageableException as mex:
+            print(
+                yaml.safe_dump({
+                    'error': mex.__class__.__name__,
+                    'message': mex.message
+                })
+            )
 
     def local_entry(self, *args: str):  # Only for dev purposes
-        # noinspection PyTypeChecker
-        self.dispatch(args)
+        try:
+            self.dispatch(list(args))
+        except MessageableException as mex:
+            print(colorama.Fore.RED +
+                  yaml.safe_dump({
+                      'error': mex.__class__.__name__,
+                      'message': mex.message
+                  }) + colorama.Style.RESET_ALL
+                  )

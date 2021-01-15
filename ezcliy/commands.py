@@ -3,6 +3,7 @@ from functools import cache
 from typing import Optional
 
 from ezcliy.parameters import Parameter
+from ezcliy.positional import Positional
 
 
 class Command:
@@ -29,6 +30,11 @@ class Command:
             params_fields.update(param_fields)
         return params_fields
 
+    @property
+    @cache
+    def positionals(self):
+        return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
+
     def dispatch(self, args: list[str]):
         # Loading predecessor's parameters
         for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
@@ -42,6 +48,10 @@ class Command:
         # Save cleaned values
         self.values = [arg for arg in args if not arg.startswith('-')]
 
+        def pass_values_to_positionals():
+            for i, p in enumerate(self.positionals):
+                p.pass_values(self.values, i)
+
         # Check is first arg an command
         if len(self.values) > 0:
             if self.values[0] in self.commands.keys():
@@ -54,8 +64,10 @@ class Command:
                 cmd.legacy = self.parameters  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
             else:
+                pass_values_to_positionals()
                 self.invoke()  # Has args, first isn't subcommand
         else:
+            pass_values_to_positionals()  # This should raise an error
             self.invoke()  # Has no args
 
     # Invocation

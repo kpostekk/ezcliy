@@ -14,7 +14,7 @@ class Positional:
     def pass_values(self, values: list[str], position: int):
         try:
             self.value = values[position]
-        except IndexError as ie:
+        except IndexError:
             if self.ask_if_missing:
                 self.value = input(self.ask_if_missing + ": ").strip()
             elif self.optional:

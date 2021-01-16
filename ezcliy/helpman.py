@@ -30,6 +30,13 @@ class Helpman(Flag):
             lines.append('')
             fline += ' [commands]'
 
+        # Some positionals
+        if command.positionals:
+            for pos in command.positionals:
+                fline += f' [{pos.name}]'
+        if not command.restrict_to_positionals_only:
+            fline += f' [values...]'
+
         # Get params
         if command.parameters:
             lines.append('Parameters:')

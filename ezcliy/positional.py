@@ -4,6 +4,7 @@ from ezcliy.exceptions import MissingPositional
 
 class Positional:
     value: str = None
+    description: str = None
 
     def __init__(self, name: str, ask_if_missing: Optional[str] = None, optional=False):
         self.name = name

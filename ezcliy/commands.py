@@ -77,8 +77,8 @@ class Command:
                 self.__setattr__(n, self.legacy.get(n))
 
         # Shrink requested parameters
-        for arguments, name in [(self.parameters.get(a), a) for a in self.parameters]:
-            args = arguments.pass_args(args)
+        for argument, name in [(self.parameters.get(a), a) for a in self.parameters]:
+            args = argument.pass_args(args)
 
         # Save cleaned values
         self.values = [arg for arg in args if not arg.startswith('-') and arg != '']

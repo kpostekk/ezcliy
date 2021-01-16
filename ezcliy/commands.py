@@ -58,7 +58,13 @@ class Command:
         return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
 
     def __help_check(self):
-        if self.help or len(self.values) == 0:
+        if self.help:
+            self.help.render_help(self)
+
+        if len([p for p in self.positionals if p is not None]):
+            return
+
+        if len(self.values):
             self.help.render_help(self)
 
     def __restriction_check(self):

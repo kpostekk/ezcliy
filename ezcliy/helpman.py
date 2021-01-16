@@ -1,4 +1,55 @@
-from ezcliy.parameters import Flag
+from collections import OrderedDict
+from typing import Optional
+
+from ezcliy.parameters import Flag, KeyVal
+
+from colorama import Style, Back, Fore
+
+
+class HelpRenderer:
+    def __init__(self, command):
+        """
+
+        :param ezcli.Command command:
+        """
+        self.command = command
+        self.sections = OrderedDict()
+
+    def add(self, section_name: str, val: str, desc: str):
+        section = self.sections.get(section_name, [])
+        section.append((val, desc))
+        self.sections.update({section_name: section})
+
+    @property
+    def firstline(self):
+        fline = Back.WHITE + Fore.BLACK + 'Usage:' + Style.RESET_ALL + f' {self.command.name}'
+
+        if self.command.commands:
+            fline += ' [COMMANDS]'
+
+        if self.command.positionals:
+            for pos in self.command.positionals:
+                fline += f' [{pos.name}]'
+        if not self.command.restrict_to_positionals_only:
+            fline += f' [VALUES...]'
+
+        if self.command.parameters:
+            fline += ' [PARAMETERS]'
+        return fline
+
+    @staticmethod
+    def render_section(section_name: str, rows: list[tuple[str, Optional[str]]]):
+        lines = [Style.BRIGHT + f'{section_name.strip().capitalize()}:' + Style.RESET_ALL]
+        for row in rows:
+            line = f'    {row[0]}'
+            if row[1] is not None:
+                line += f' - {row[1]}'
+            lines.append(line)
+        return '\n'.join(lines)
+
+    def __str__(self):
+        lines = [self.firstline] + [self.render_section(n, r) for n, r in self.sections.items()]
+        return '\n'.join(lines)
 
 
 class Helpman(Flag):
@@ -17,39 +68,24 @@ class Helpman(Flag):
         :param ezcli.Command command:
         :return:
         """
-        lines = []
-
-        # Get first line
-        fline = f'{command.name}'
+        hr = HelpRenderer(command)
 
         # Get commands
         if command.commands:
-            lines.append('Commands:')
-            for subcom in command.commands.values():
-                lines.append(f'    {subcom().name} - {subcom().description}')
-            lines.append('')
-            fline += ' [commands]'
+            for n, c in command.commands.items():
+                hr.add('commands', n, c().description)
 
         # Some positionals
         if command.positionals:
             for pos in command.positionals:
-                fline += f' [{pos.name}]'
-        if not command.restrict_to_positionals_only:
-            fline += f' [values...]'
+                hr.add('positionals', pos.name, pos.description)
 
         # Get params
         if command.parameters:
-            lines.append('Parameters:')
-            for key, param in command.parameters.items():
-                if param.description is None:
-                    lines.append(f'    {" ".join(param.aliases)}')
-                else:
-                    lines.append(f'    {" ".join(param.aliases)} - {param.description}')
-            lines.append('')
-            fline += ' [parameters]'
+            for flag in [f for f in command.parameters.values() if isinstance(f, Flag)]:
+                hr.add('flags', ' '.join(flag.aliases), flag.description)
+            for keyval in [kv for kv in command.parameters.values() if isinstance(kv, KeyVal)]:
+                hr.add('keyed values', keyval.key + ' (value)', keyval.description)
 
-        # Insert first line
-        lines = [fline] + lines
-
-        print(*lines, sep='\n')
+        print(hr)
         exit()

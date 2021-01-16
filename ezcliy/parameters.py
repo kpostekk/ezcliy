@@ -2,7 +2,7 @@ import re
 
 
 class Parameter:
-    value: object = None
+    value: str = None
     description: str = None
 
     def pass_args(self, user_args: list[str]) -> list[str]: ...
@@ -10,11 +10,24 @@ class Parameter:
     def __str__(self):
         return str(self.value)
 
+    def __int__(self):
+        return int(self.value)
+
+    def __float__(self):
+        return float(self.value)
+
+    def __bool__(self):
+        return bool(self.value)
+
 
 class Flag(Parameter):
     value: bool = False
 
     def __init__(self, *aliases: str):
+        """
+
+        :param aliases: must contains dash or dashes
+        """
         self.aliases = aliases
 
     def pass_args(self, user_args: list[str]) -> list[str]:
@@ -23,9 +36,6 @@ class Flag(Parameter):
         self.value = len(shrinked_args) != len(user_args)
         return shrinked_args
 
-    def __bool__(self):
-        return self.value
-
     def __repr__(self):
         return f'<Flag {" ".join(self.aliases)} has value {self.value}>'
 
@@ -33,11 +43,16 @@ class Flag(Parameter):
 class KeyVal(Parameter):
     value: str = None
 
-    def __init__(self, keyname: str):
+    def __init__(self, keyname: str, default=None):
+        """
+
+        :param keyname: must contains dash or dashes
+        """
         self.key = keyname
+        self.value = default
 
     def pass_args(self, user_args: list[str]) -> list[str]:
-        regex_rule = r'--{}[=|\ ]\"?([^-][\w.,]*)\"?'.format(self.key)
+        regex_rule = r'{}[=|\ ]\"?([^-][\w.,]*)\"?'.format(self.key)
         regex_match = re.search(regex_rule, ' '.join(user_args))
 
         if regex_match is None:

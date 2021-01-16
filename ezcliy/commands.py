@@ -136,6 +136,3 @@ class Command:
         This method grabs args from terminal. You should put it into ``if main``. This should be used in production.
         """
         self.entry(*sys.argv[1:])
-
-    def local_entry(self, sim_input: str):  # Only for dev purposes
-        self.entry(*sim_input.split(' '))

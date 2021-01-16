@@ -15,12 +15,13 @@ class Command:
     """
     Base class for creating commands. You probably will override this class
     """
-    name: Optional[str]
+    name: str = sys.argv[0].split("/")[-1]
     description: Optional[str]
     values: list[str] = []
     legacy: dict[str, Parameter] = {}
     only_positionals = False
     help: Helpman = Helpman()
+    help.description = 'Prints this message'
 
     @property
     @cache

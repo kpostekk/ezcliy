@@ -8,17 +8,20 @@ import yaml
 from ezcliy.parameters import Parameter
 from ezcliy.positional import Positional
 from ezcliy.exceptions import MessageableException, TooManyValues
+from ezcliy.helpman import Helpman
 
 
 class Command:
     """
     Base class for creating commands. You probably will override this class
     """
-    name: Optional[str]
+    name: str = sys.argv[0].split("/")[-1]
     description: Optional[str]
     values: list[str] = []
     legacy: dict[str, Parameter] = {}
-    only_positionals = False
+    restrict_to_positionals_only = False
+    help: Helpman = Helpman()
+    help.description = 'prints this message'
 
     @property
     @cache
@@ -40,11 +43,10 @@ class Command:
 
         :return: All declared parameters as name-class dict
         """
-        params_fields = dict()
-        for param_fields in [{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
-                             isinstance(self.__class__.__dict__.get(o), Parameter)]:
-            params_fields.update(param_fields)
-        return params_fields
+        parameters = {'help': self.help}
+        for name, param in [(n, p) for n, p in self.__class__.__dict__.items() if isinstance(p, Parameter)]:
+            parameters.update({name: param})
+        return parameters
 
     @property
     @cache
@@ -54,6 +56,14 @@ class Command:
         :return: All declared positionals
         """
         return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
+
+    def __help_check(self):
+        if self.help or len(self.values) == 0:
+            self.help.render_help(self)
+
+    def __restriction_check(self):
+        if len(self.values) != len(self.positionals) and self.restrict_to_positionals_only:
+            raise TooManyValues(self.values, len(self.positionals))
 
     def dispatch(self, args: list[str]):
         """
@@ -71,10 +81,7 @@ class Command:
             args = arguments.pass_args(args)
 
         # Save cleaned values
-        self.values = [arg for arg in args if not arg.startswith('-')]
-
-        if len(self.values) != len(self.positionals) and self.only_positionals:
-            raise TooManyValues(self.values, len(self.positionals))
+        self.values = [arg for arg in args if not arg.startswith('-') and arg != '']
 
         def pass_values_to_positionals():
             for i, p in enumerate(self.positionals):
@@ -85,16 +92,23 @@ class Command:
             if self.values[0] in self.commands.keys():
                 # Shrink values
                 cmd_name, self.values = self.values[0], self.values[1:]
+                # Checks
+                self.__restriction_check()
                 # Invoke, has args, first is subcommand
-                self.invoke()
+                if not self.help:
+                    self.invoke()
                 # Prepare subcommand
                 cmd: Command = self.commands.get(cmd_name)()
-                cmd.legacy = self.parameters  # Passing aquired flags
+                cmd.legacy = self.parameters.copy()  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
             else:
+                self.__help_check()
+                self.__restriction_check()
                 pass_values_to_positionals()
                 self.invoke()  # Has args, first isn't subcommand
         else:
+            self.__help_check()
+            self.__restriction_check()
             pass_values_to_positionals()  # This should raise an error
             self.invoke()  # Has no args
 

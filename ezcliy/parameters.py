@@ -3,6 +3,7 @@ import re
 
 class Parameter:
     value: object = None
+    description: str = None
 
     def pass_args(self, user_args: list[str]) -> list[str]: ...
 

@@ -2,18 +2,31 @@ import sys
 from functools import cache
 from typing import Optional
 
+import colorama
+import yaml
+
 from ezcliy.parameters import Parameter
+from ezcliy.positional import Positional
+from ezcliy.exceptions import MessageableException, TooManyValues
 
 
 class Command:
+    """
+    Base class for creating commands. You probably will override this class
+    """
     name: Optional[str]
     description: Optional[str]
     values: list[str] = []
     legacy: dict[str, Parameter] = {}
+    only_positionals = False
 
     @property
     @cache
     def commands(self) -> dict[str, type]:
+        """
+
+        :return: Children...
+        """
         cmds = dict()
         for pair in [{o().name: o} for o in self.__class__.__dict__.values() if isinstance(o, type) if
                      issubclass(o, Command)]:
@@ -23,13 +36,31 @@ class Command:
     @property
     @cache
     def parameters(self) -> dict[str, Parameter]:
+        """
+
+        :return: All declared parameters as name-class dict
+        """
         params_fields = dict()
         for param_fields in [{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
                              isinstance(self.__class__.__dict__.get(o), Parameter)]:
             params_fields.update(param_fields)
         return params_fields
 
+    @property
+    @cache
+    def positionals(self):
+        """
+
+        :return: All declared positionals
+        """
+        return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
+
     def dispatch(self, args: list[str]):
+        """
+
+        :param args: list of arguments to process
+        :return: processed list of arguments
+        """
         # Loading predecessor's parameters
         for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
             if n in self.legacy:
@@ -41,6 +72,13 @@ class Command:
 
         # Save cleaned values
         self.values = [arg for arg in args if not arg.startswith('-')]
+
+        if len(self.values) != len(self.positionals) and self.only_positionals:
+            raise TooManyValues(self.values, len(self.positionals))
+
+        def pass_values_to_positionals():
+            for i, p in enumerate(self.positionals):
+                p.pass_values(self.values, i)
 
         # Check is first arg an command
         if len(self.values) > 0:
@@ -54,18 +92,36 @@ class Command:
                 cmd.legacy = self.parameters  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
             else:
+                pass_values_to_positionals()
                 self.invoke()  # Has args, first isn't subcommand
         else:
+            pass_values_to_positionals()  # This should raise an error
             self.invoke()  # Has no args
 
     # Invocation
     def invoke(self):
+        """
+        The entry point for your command.
+        """
         ...
 
     # Entry points
-    def cli_entry(self):
-        self.dispatch(sys.argv[1:])
+    def entry(self, *args: str):
+        try:
+            self.dispatch(list(args))
+        except MessageableException as mex:
+            print(colorama.Fore.RED +
+                  yaml.safe_dump({
+                      'error': mex.__class__.__name__,
+                      'message': mex.message
+                  }) + colorama.Style.RESET_ALL
+                  )
 
-    def local_entry(self, *args: str):  # Only for dev purposes
-        # noinspection PyTypeChecker
-        self.dispatch(args)
+    def cli_entry(self):
+        """
+        This method grabs args from terminal. You should put it into ``if main``. This should be used in production.
+        """
+        self.entry(sys.argv[1:])
+
+    def local_entry(self, sim_input: str):  # Only for dev purposes
+        self.entry(*sim_input.split(' '))

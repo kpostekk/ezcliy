@@ -11,6 +11,9 @@ from ezcliy.exceptions import MessageableException
 
 
 class Command:
+    """
+    Base class for creating commands. You probably will override this class
+    """
     name: Optional[str]
     description: Optional[str]
     values: list[str] = []
@@ -19,6 +22,10 @@ class Command:
     @property
     @cache
     def commands(self) -> dict[str, type]:
+        """
+
+        :return: Children...
+        """
         cmds = dict()
         for pair in [{o().name: o} for o in self.__class__.__dict__.values() if isinstance(o, type) if
                      issubclass(o, Command)]:
@@ -28,6 +35,10 @@ class Command:
     @property
     @cache
     def parameters(self) -> dict[str, Parameter]:
+        """
+
+        :return: All declared parameters as name-class dict
+        """
         params_fields = dict()
         for param_fields in [{o: self.__class__.__dict__.get(o)} for o in self.__class__.__dict__ if
                              isinstance(self.__class__.__dict__.get(o), Parameter)]:
@@ -37,9 +48,18 @@ class Command:
     @property
     @cache
     def positionals(self):
+        """
+
+        :return: All declared positionals
+        """
         return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
 
     def dispatch(self, args: list[str]):
+        """
+
+        :param args: list of arguments to process
+        :return: processed list of arguments
+        """
         # Loading predecessor's parameters
         for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
             if n in self.legacy:
@@ -76,6 +96,9 @@ class Command:
 
     # Invocation
     def invoke(self):
+        """
+        The entry point for your command.
+        """
         ...
 
     # Entry points

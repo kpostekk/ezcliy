@@ -7,7 +7,7 @@ import yaml
 
 from ezcliy.parameters import Parameter
 from ezcliy.positional import Positional
-from ezcliy.exceptions import MessageableException
+from ezcliy.exceptions import MessageableException, TooManyValues
 
 
 class Command:
@@ -18,6 +18,7 @@ class Command:
     description: Optional[str]
     values: list[str] = []
     legacy: dict[str, Parameter] = {}
+    only_positionals = False
 
     @property
     @cache
@@ -72,6 +73,9 @@ class Command:
         # Save cleaned values
         self.values = [arg for arg in args if not arg.startswith('-')]
 
+        if len(self.values) != len(self.positionals) and self.only_positionals:
+            raise TooManyValues(self.values, len(self.positionals))
+
         def pass_values_to_positionals():
             for i, p in enumerate(self.positionals):
                 p.pass_values(self.values, i)
@@ -102,18 +106,7 @@ class Command:
         ...
 
     # Entry points
-    def cli_entry(self):
-        try:
-            self.dispatch(sys.argv[1:])
-        except MessageableException as mex:
-            print(
-                yaml.safe_dump({
-                    'error': mex.__class__.__name__,
-                    'message': mex.message
-                })
-            )
-
-    def local_entry(self, *args: str):  # Only for dev purposes
+    def entry(self, *args: str):
         try:
             self.dispatch(list(args))
         except MessageableException as mex:
@@ -123,3 +116,12 @@ class Command:
                       'message': mex.message
                   }) + colorama.Style.RESET_ALL
                   )
+
+    def cli_entry(self):
+        """
+        This method grabs args from terminal. You should put it into ``if main``. This should be used in production.
+        """
+        self.entry(sys.argv[1:])
+
+    def local_entry(self, sim_input: str):  # Only for dev purposes
+        self.entry(*sim_input.split(' '))

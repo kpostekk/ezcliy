@@ -19,18 +19,30 @@ class Helpman(Flag):
         """
         lines = []
 
+        # Get first line
+        fline = f'{command.name}'
+
         # Get commands
         if command.commands:
             lines.append('Commands:')
             for subcom in command.commands.values():
                 lines.append(f'    {subcom().name} - {subcom().description}')
             lines.append('')
+            fline += ' [commands]'
 
         # Get params
         if command.parameters:
             lines.append('Parameters:')
             for key, param in command.parameters.items():
-                lines.append(f'    {" ".join(param.aliases)} - {param.aliases}')
+                if param.description is None:
+                    lines.append(f'    {" ".join(param.aliases)}')
+                else:
+                    lines.append(f'    {" ".join(param.aliases)} - {param.description}')
+            lines.append('')
+            fline += ' [parameters]'
+
+        # Insert first line
+        lines = [fline] + lines
 
         print(*lines, sep='\n')
         exit()

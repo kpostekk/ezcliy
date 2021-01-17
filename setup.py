@@ -18,6 +18,7 @@ setup(
     author_email="krystian@postek.eu",
     description="Framework for creating CLI tools",
     classifiers=[
+        "Programming Language :: Python :: 3.9",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
@@ -25,4 +26,5 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     long_description=readme(),
+    python_requires='>=3.9',
 )

@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from ezcliy import __version__
 
 
@@ -18,12 +18,11 @@ setup(
     author_email="krystian@postek.eu",
     description="Framework for creating CLI tools",
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3'
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
     ],
-    long_description=readme()
+    long_description=readme(),
 )

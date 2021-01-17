@@ -13,5 +13,5 @@ wheel = "*"
 sphinx-intl = "*"
 pipenv-setup = "*"
 
-[requires]
-python_full_version = ">=3.9"
+#[requires]
+#python_full_version = ">=3.9"

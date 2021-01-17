@@ -23,7 +23,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
     ],
     long_description=readme(),
     python_requires='>=3.9',

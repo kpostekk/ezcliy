@@ -15,10 +15,10 @@ class Command:
     """
     Base class for creating commands. You probably will override this class
     """
-    name: str
+    name: str = None
     """Name of command."""
 
-    description: str
+    description: str = None
     """Description for help"""
 
     values: list[str] = []
@@ -33,12 +33,14 @@ class Command:
     allow_empty_calls = False
     """If true, will not print help when command is issued without parameters"""
 
-    help: Helpman
+    help: Helpman = None
     """Object that handles --help, it's just a powerful flag instance"""
 
     def __init__(self):
-        self.name = self.__class__.__name__.lower()
-        self.description = f'The is not description for {self.name}'
+        if self.name is None:
+            self.name = self.__class__.__name__.lower()
+        if self.description is None:
+            self.description = f'The is not description for {self.name}'
         self.help = Helpman()
 
     @property

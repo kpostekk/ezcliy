@@ -10,7 +10,8 @@ pyyaml = "*"
 [dev-packages]
 sphinx = "*"
 wheel = "*"
-sphinx-intl = "*"
+pytest = "*"
+pytest-pycharm = "*"
 pipenv-setup = "*"
 
 [requires]

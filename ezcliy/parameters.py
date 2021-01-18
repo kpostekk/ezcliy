@@ -5,7 +5,13 @@ class Parameter:
     value: str = None
     description: str = None
 
-    def pass_args(self, user_args: list[str]) -> list[str]: ...
+    def pass_args(self, user_args: list[str]) -> list[str]:
+        """
+
+        :param user_args: list of args to process
+        :return: processed list of args, usally smaller then input
+        """
+        ...
 
     def __str__(self):
         return str(self.value)

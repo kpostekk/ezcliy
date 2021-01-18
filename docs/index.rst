@@ -12,13 +12,15 @@ An alternative framework for click or argparse.
    :caption: Contents:
 
    firststeps
+   click
    command
    parameters
 
 Features
 ---------
-* Model-like decarating of parameters
+* Model-like decarating of parameters and values
 * Easy command nesting
+* *not yet, but i'm planning to add ``fish`` and ``zsh`` code completion generator*
 
 Example
 --------

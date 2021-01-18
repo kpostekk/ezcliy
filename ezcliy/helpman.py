@@ -55,6 +55,7 @@ class HelpRenderer:
 class Helpman(Flag):
     def __init__(self):
         super().__init__('--help')
+        self.description = 'no description has been provided'
 
     def pass_args(self, user_args: list[str]) -> list[str]:
         if self.value:

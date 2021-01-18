@@ -15,21 +15,38 @@ class Command:
     """
     Base class for creating commands. You probably will override this class
     """
-    name: str = sys.argv[0].split("/")[-1]
-    description: str = 'lorem ipsum'
+    name: str
+    """Name of command."""
+
+    description: str
+    """Description for help"""
+
     values: list[str] = []
+    """Cleaned values from cmd"""
+
     legacy: dict[str, Parameter] = {}
+    """Parameters inherited after previous command"""
+
     restrict_to_positionals_only = False
+    """If true, allow only values referenced as positionals"""
+
     allow_empty_calls = False
-    help: Helpman = Helpman()
-    help.description = 'prints this message'
+    """If true, will not print help when command is issued without parameters"""
+
+    help: Helpman
+    """Object that handles --help, it's just a powerful flag instance"""
+
+    def __init__(self):
+        self.name = self.__class__.__name__.lower()
+        self.description = f'The is not description for {self.name}'
+        self.help = Helpman()
 
     @property
     @cache
     def commands(self) -> dict[str, type]:
         """
 
-        :return: Children...
+        :return: Subcommands
         """
         cmds = dict()
         for pair in [{o().name: o} for o in self.__class__.__dict__.values() if isinstance(o, type) if
@@ -42,7 +59,7 @@ class Command:
     def parameters(self) -> dict[str, Parameter]:
         """
 
-        :return: All declared parameters as name-class dict
+        :return: All declared parameters as name-parameter dict
         """
         parameters = {'help': self.help}
         for name, param in [(n, p) for n, p in self.__class__.__dict__.items() if isinstance(p, Parameter)]:
@@ -55,6 +72,7 @@ class Command:
         """
 
         :return: All declared positionals
+        :rtype: list[Positional]
         """
         return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
 
@@ -71,9 +89,9 @@ class Command:
 
     def dispatch(self, args: list[str]):
         """
+        The magic spaghetti of framework.
 
         :param args: list of arguments to process
-        :return: processed list of arguments
         """
         # Loading predecessor's parameters
         for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
@@ -129,6 +147,11 @@ class Command:
 
     # Entry points
     def entry(self, *args: str):
+        """
+        Handles errors caused by dispatch method. Used also for testing. Use it on dev env.
+
+        :param str args:
+        """
         try:
             self.dispatch(list(args))
         except MessageableException as mex:

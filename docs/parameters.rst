@@ -7,3 +7,7 @@ Parameters
 
 .. autoclass:: KeyVal
     :members:
+
+Creating own parameters
+------------------------
+

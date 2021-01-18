@@ -16,10 +16,11 @@ class Command:
     Base class for creating commands. You probably will override this class
     """
     name: str = sys.argv[0].split("/")[-1]
-    description: Optional[str]
+    description: str = 'lorem ipsum'
     values: list[str] = []
     legacy: dict[str, Parameter] = {}
     restrict_to_positionals_only = False
+    allow_empty_calls = False
     help: Helpman = Helpman()
     help.description = 'prints this message'
 
@@ -64,9 +65,6 @@ class Command:
         if len([p for p in self.positionals if p is not None]):
             return
 
-        if len(self.values):
-            self.help.render_help(self)
-
     def __restriction_check(self):
         if len(self.values) != len(self.positionals) and self.restrict_to_positionals_only:
             raise TooManyValues(self.values, len(self.positionals))
@@ -81,6 +79,10 @@ class Command:
         for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
             if n in self.legacy:
                 self.__setattr__(n, self.legacy.get(n))
+
+        # Special help check
+        if not len(args) and not self.allow_empty_calls:
+            self.help.render_help(self)
 
         # Shrink requested parameters
         for argument, name in [(self.parameters.get(a), a) for a in self.parameters]:

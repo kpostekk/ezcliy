@@ -41,7 +41,7 @@ class Flag(Parameter):
 
 
 class KeyVal(Parameter):
-    value: str = None
+    values: list[str] = []
 
     def __init__(self, keyname: str, default=None):
         """
@@ -49,23 +49,40 @@ class KeyVal(Parameter):
         :param keyname: must contains dash or dashes
         """
         self.key = keyname
-        self.value = default
+        if default is not None:
+            self.values = [default]
+
+    @property
+    def value(self):
+        try:
+            return self.values[0]
+        except IndexError:
+            return None
 
     def pass_args(self, user_args: list[str]) -> list[str]:
         regex_rule = r'{}[=|\ ]\"?([^-][\w.,]*)\"?'.format(self.key)
-        regex_match = re.search(regex_rule, ' '.join(user_args))
+        regex_match = re.findall(regex_rule, ' '.join(user_args))
 
-        if regex_match is None:
+        if not regex_match:
             return user_args
 
-        self.value = regex_match.groups()[0]
-        kv_with_eq, kv_with_sp = f'--{self.key}={self.value}', f'--{self.key}'
-        if kv_with_eq in user_args:
-            user_args.remove(kv_with_eq)
-        elif kv_with_sp in user_args:
-            user_args.remove(kv_with_sp)
-            user_args.remove(self.value)
-        return user_args
+        self.values = list(regex_match)
+
+        # Remove acquired values
+        remove_tag = '<removeremoveremove>'
+        h = user_args.copy()
+        for i, arg in enumerate(h.copy()):
+            if arg == self.key:
+                h[i] = remove_tag
+                continue
+            h[i] = re.sub(regex_rule, remove_tag, arg)
+        for i, arg in enumerate(h.copy()):
+            if i > 0:
+                if arg in self.values and h[i-1] == remove_tag:
+                    h[i] = remove_tag
+        h = [k for k in h if k != remove_tag]
+
+        return h
 
     def __repr__(self):
         return f'<Value of {self.key} has value {self.value}>'

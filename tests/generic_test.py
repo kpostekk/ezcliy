@@ -14,10 +14,9 @@ def test_flags(capsys: CaptureFixture[str]):
             if self.a:
                 print(len(self.values), end='')
 
-    expected = '0'
     TestingCommand().entry('-a', '--aaa', '-v', '-t')
     capt = capsys.readouterr()
-    assert capt.out == expected
+    assert capt.out == '0'
 
 
 def test_keyvals(capsys: CaptureFixture[str]):
@@ -56,8 +55,7 @@ def test_simple_subcmd(capsys: CaptureFixture[str]):
                         ]
                     ), end=''
                 )
-    expected = ['pytest is fun', True, True, '420']
 
     SpecialCommand().entry('sub', 'pytest is fun', '-o', '-i', '--ik', '420')
     capt = capsys.readouterr()
-    assert capt.out == json.dumps(expected)
+    assert capt.out == json.dumps(['pytest is fun', True, True, '420'])

@@ -129,16 +129,12 @@ class Command:
                 cmd: Command = self.commands.get(cmd_name)()
                 cmd.legacy = self.parameters.copy()  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
-            else:
-                self.__help_check()
-                self.__restriction_check()
-                pass_values_to_positionals()
-                self.invoke()  # Has args, first isn't subcommand
-        else:
-            self.__help_check()
-            self.__restriction_check()
-            pass_values_to_positionals()  # This should raise an error
-            self.invoke()  # Has no args
+                return
+
+        self.__help_check()
+        self.__restriction_check()
+        pass_values_to_positionals()  # This should raise an error
+        self.invoke()  # Has no args
 
     # Invocation
     def invoke(self):

@@ -9,6 +9,7 @@ class MissingPositional(MessageableException):
     """
     Raised when user forgets to pass positional.
     """
+
     def __init__(self, positional, position):
         """
 
@@ -17,13 +18,14 @@ class MissingPositional(MessageableException):
         """
         self.positional = positional
         self.position: int = position
-        self.message = f'Missing {position+1}. argument!'
+        self.message = f'Missing {position + 1}. argument!'
 
 
 class TooManyValues(MessageableException):
     """
     Raised when user passes to many arguments. Require ``only_positionals = True`` in a ``Command`` class
     """
+
     def __init__(self, values, expected_len):
         """
 

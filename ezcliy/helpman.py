@@ -1,9 +1,9 @@
 from collections import OrderedDict
 from typing import Optional
 
-from ezcliy.parameters import Flag, KeyVal
-
 from colorama import Style, Back, Fore
+
+from ezcliy.parameters import Flag, KeyVal
 
 
 class HelpRenderer:

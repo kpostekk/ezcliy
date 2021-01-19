@@ -84,7 +84,7 @@ class KeyVal(Parameter):
             h[i] = re.sub(regex_rule, remove_tag, arg)
         for i, arg in enumerate(h.copy()):
             if i > 0:
-                if arg in self.values and h[i-1] == remove_tag:
+                if arg in self.values and h[i - 1] == remove_tag:
                     h[i] = remove_tag
         h = [k for k in h if k != remove_tag]
 

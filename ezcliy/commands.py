@@ -1,9 +1,11 @@
+import asyncio
 import sys
 from functools import cache
-from typing import Optional
+import inspect
 
 import colorama
 import yaml
+from asgiref.sync import async_to_sync
 
 from ezcliy.parameters import Parameter
 from ezcliy.positional import Positional
@@ -124,7 +126,7 @@ class Command:
                 self.__restriction_check()
                 # Invoke, has args, first is subcommand
                 if not self.help:
-                    self.invoke()
+                    self.__invoke_handler()
                 # Prepare subcommand
                 cmd: Command = self.commands.get(cmd_name)()
                 cmd.legacy = self.parameters.copy()  # Passing aquired flags
@@ -134,7 +136,14 @@ class Command:
         self.__help_check()
         self.__restriction_check()
         pass_values_to_positionals()  # This should raise an error
-        self.invoke()  # Has no args
+        self.__invoke_handler()  # Has no args
+
+    def __invoke_handler(self):
+        if inspect.iscoroutinefunction(self.invoke):
+            # noinspection PyTypeChecker
+            asyncio.run(self.invoke())
+        else:
+            self.invoke()
 
     # Invocation
     def invoke(self):

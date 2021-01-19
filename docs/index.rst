@@ -21,7 +21,14 @@ Features
 * Model-like decarating of parameters and values
 * Easy command nesting
 * Async support
-* *not yet, but i'm planning to add ``fish`` and ``zsh`` code completion generator*
+* *not yet, but i'm planning to add fish and zsh code completion generator*
+
+Install
+--------
+
+.. code-block::
+
+   pip3 install git+https://github.com/kpostekk/ezcliy.git
 
 Example
 --------

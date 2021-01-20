@@ -1,5 +1,19 @@
 # *Ez* cliy
-A hassle free framework for creating commandline tools
+A hassle-free framework for creating command line tools
+
+## Install
+
+from PyPi
+```
+pip3 install ezcliy
+```
+
+or from directly from Github
+```
+pip3 install git+https://github.com/kpostekk/ezcliy.git
+```
+
+More details in [docs](https://ezcliy.readthedocs.io/en/latest/)
 
 ## Fast example
 

@@ -8,7 +8,10 @@ class Positional:
     Asign value (by source order) to object, allows asking for value or provide default one.
     """
     value: str = None
+    """Fetched value by positional"""
+
     description: str = None
+    """Description for help"""
 
     def __init__(self, name: str, ask_if_missing: Optional[str] = None, optional=False):
         self.name = name

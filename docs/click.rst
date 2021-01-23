@@ -15,11 +15,3 @@ Hello world comprasion
 | .. image:: _static/clickhw1.png          | .. image:: _static/ezcliyhw1.png         |
 +------------------------------------------+------------------------------------------+
 
-Objects over decorators
-------------------------
-
-Command nesting
-----------------
-
-Where is the catch?
---------------------

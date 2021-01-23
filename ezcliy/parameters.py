@@ -3,10 +3,13 @@ import re
 
 class Parameter:
     value: str = None
+    """Value of parameter"""
     description: str = None
+    """Description of param"""
 
     def pass_args(self, user_args: list[str]) -> list[str]:
         """
+        This method gathers all args, and removes processed args.
 
         :param user_args: list of args to process
         :return: processed list of args, usally smaller then input

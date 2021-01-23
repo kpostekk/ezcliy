@@ -2,12 +2,18 @@ Parameters
 ============
 .. py:currentmodule:: ezcliy.parameters
 
+.. autoclass:: Parameter
+    :members:
+
 .. autoclass:: Flag
     :members:
 
 .. autoclass:: KeyVal
     :members:
 
-Creating own parameters
-------------------------
+Positionals
+============
+.. py:currentmodule:: ezcliy.positional
 
+.. autoclass:: Positional
+    :members:

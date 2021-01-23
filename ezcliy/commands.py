@@ -168,7 +168,7 @@ class Command:
         """
         Handles errors caused by dispatch method. Used also for testing. Use it on dev env.
 
-        :param str args:
+        :param str args: list of passed arguments
         """
         try:
             self.dispatch(list(args))

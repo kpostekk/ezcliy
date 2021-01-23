@@ -41,8 +41,9 @@ class Command:
         if self.name is None:
             self.name = self.__class__.__name__.lower()
         if self.description is None:
-            self.description = f'The is not description for {self.name}'
+            self.description = f'There is not description for {self.name}'
         self.help = Helpman()
+        self.__subcommand_issued = None
 
     @property
     @cache
@@ -56,6 +57,17 @@ class Command:
                      issubclass(o, Command)]:
             cmds.update(pair)
         return cmds
+
+    @property
+    def is_subcommand_issued(self):
+        if self.__subcommand_issued is not None:
+            return self.__subcommand_issued
+
+        if len(self.values) > 0:
+            self.__subcommand_issued = self.values[0] in self.commands.keys()
+        else:
+            self.__subcommand_issued = False
+        return self.is_subcommand_issued
 
     @property
     @cache
@@ -118,7 +130,7 @@ class Command:
 
         # Check is first arg an command
         if len(self.values) > 0:
-            if self.values[0] in self.commands.keys():
+            if self.is_subcommand_issued:
                 # Shrink values
                 cmd_name, self.values = self.values[0], self.values[1:]
                 # Checks

@@ -88,5 +88,4 @@ class Helpman(Flag):
             for keyval in [kv for kv in command.parameters.values() if isinstance(kv, KeyVal)]:
                 hr.add('keyed values', keyval.key + ' (value)', keyval.description)
 
-        print(hr)
-        exit()
+        return hr.__str__()

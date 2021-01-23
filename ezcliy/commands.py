@@ -25,7 +25,7 @@ class Command:
     values: list[str] = []
     """Cleaned values from cmd"""
 
-    legacy: dict[str, Parameter] = {}
+    _legacy: dict[str, Parameter] = {}
     """Parameters inherited after previous command"""
 
     restrict_to_positionals_only = False
@@ -34,7 +34,7 @@ class Command:
     allow_empty_calls = False
     """If true, will not print help when command is issued without parameters"""
 
-    help: Helpman = None
+    _help: Helpman = None
     """Object that handles --help, it's just a powerful flag instance"""
 
     def __init__(self):
@@ -42,7 +42,7 @@ class Command:
             self.name = self.__class__.__name__.lower()
         if self.description is None:
             self.description = f'There is not description for {self.name}'
-        self.help = Helpman()
+        self._help = Helpman()
         self.__subcommand_issued = None
 
     @property
@@ -76,7 +76,7 @@ class Command:
 
         :return: All declared parameters as name-parameter dict
         """
-        parameters = {'help': self.help}
+        parameters = {'help': self._help}
         for name, param in [(n, p) for n, p in self.__class__.__dict__.items() if isinstance(p, Parameter)]:
             parameters.update({name: param})
         return parameters
@@ -92,8 +92,9 @@ class Command:
         return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
 
     def __help_check(self):
-        if self.help:
-            self.help.render_help(self)
+        if self._help:
+            print(self._help.render_help(self))
+            exit()
 
         if len([p for p in self.positionals if p is not None]):
             return
@@ -110,12 +111,14 @@ class Command:
         """
         # Loading predecessor's parameters
         for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
-            if n in self.legacy:
-                self.__setattr__(n, self.legacy.get(n))
+            if n in self._legacy:
+                self.__setattr__(n, self._legacy.get(n))
 
         # Special help check
         if not len(args) and not self.allow_empty_calls:
-            self.help.render_help(self)
+            print(self._help.render_help(self))
+            exit()
+
 
         # Shrink requested parameters
         for argument, name in [(self.parameters.get(a), a) for a in self.parameters]:
@@ -136,11 +139,11 @@ class Command:
                 # Checks
                 self.__restriction_check()
                 # Invoke, has args, first is subcommand
-                if not self.help:
+                if not self._help:
                     self.__invoke_handler()
                 # Prepare subcommand
                 cmd: Command = self.commands.get(cmd_name)()
-                cmd.legacy = self.parameters.copy()  # Passing aquired flags
+                cmd._legacy = self.parameters.copy()  # Passing aquired flags
                 cmd.dispatch(args[args.index(cmd_name) + 1:])  # Passing only args after command
                 return
 

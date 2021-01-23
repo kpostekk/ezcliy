@@ -60,6 +60,11 @@ class Command:
 
     @property
     def is_subcommand_issued(self):
+        """
+
+        :return: True if subcommand has been issued
+        :rtype: bool
+        """
         if self.__subcommand_issued is not None:
             return self.__subcommand_issued
 
@@ -75,6 +80,7 @@ class Command:
         """
 
         :return: All declared parameters as name-parameter dict
+        :rtype: dict[str, Parameter]
         """
         parameters = {'help': self._help}
         for name, param in [(n, p) for n, p in self.__class__.__dict__.items() if isinstance(p, Parameter)]:

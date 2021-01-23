@@ -1,5 +1,6 @@
 import json
 
+import pytest
 from _pytest.capture import CaptureFixture
 
 from ezcliy import Command, Flag, Positional, KeyVal
@@ -59,3 +60,35 @@ def test_simple_subcmd(capsys: CaptureFixture[str]):
     SpecialCommand().entry('sub', 'pytest is fun', '-o', '-i', '--ik', '420')
     capt = capsys.readouterr()
     assert capt.out == json.dumps(['pytest is fun', True, True, '420'])
+
+
+def test_help_renderer():
+    class SpecialCommand(Command):
+        flag_a = Flag('-a')
+        kv_b = KeyVal('-b')
+        pos_c = Positional('ccc')
+
+        def invoke(self):
+            print('AAAAAAAAA')
+
+        class OtherCommand(Command):
+            name = 'oocc'
+
+    help_str = SpecialCommand()._help.render_help(SpecialCommand())
+    assert '-a' in help_str
+    assert '-b' in help_str
+    assert 'ccc' in help_str
+
+
+def test_help_flag(capsys: CaptureFixture[str]):
+    class SpecialCommand(Command):
+        flag_a = Flag('-a', '--aaa')
+        flag_a.description = 'I like jazz'
+
+    with pytest.raises(SystemExit) as wrapped_e:
+        SpecialCommand().entry(*['--help'])
+    capt = capsys.readouterr()
+    assert wrapped_e.type == SystemExit
+    assert '--help' in capt.out
+    assert '--aaa' in capt.out
+    assert 'I like jazz' in capt.out

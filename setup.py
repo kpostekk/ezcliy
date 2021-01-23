@@ -3,12 +3,12 @@ from ezcliy import __version__
 
 
 def readme():
-    with open('README.md') as f:
+    with open("README.md") as f:
         return f.read()
 
 
 setup(
-    install_requires=["colorama==0.4.4", "pyyaml==5.3.1"],
+    install_requires=["colorama==0.4.4", "pyyaml==5.4.1"],
     name="ezcliy",
     version=__version__,
     packages=["ezcliy"],
@@ -25,5 +25,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     long_description=readme(),
-    python_requires='>=3.9',
+    python_requires=">=3.9",
 )

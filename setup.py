@@ -12,6 +12,10 @@ setup(
     name="ezcliy",
     version=__version__,
     packages=["ezcliy"],
+    project_urls={
+        'Repository': 'https://github.com/kpostekk/ezcliy/',
+        'Docs': 'https://ezcliy.readthedocs.io/en/latest/'
+    },
     url="https://github.com/kpostekk/ezcliy",
     license="Apache",
     author="Krystian Postek",
@@ -25,5 +29,6 @@ setup(
         "Operating System :: OS Independent",
     ],
     long_description=readme(),
-    python_requires=">=3.9",
+    long_description_content_type="text/markdown",
+    python_requires=">=3.9"
 )

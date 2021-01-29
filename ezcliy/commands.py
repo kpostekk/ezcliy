@@ -13,11 +13,9 @@ from ezcliy.positional import Positional
 
 
 class Command:
-    """
-    Base class for creating commands. You probably will override this class
-    """
+    """Base class for creating commands. You probably will override this class"""
     name: str = None
-    """Name of command."""
+    """Name of command"""
 
     description: str = None
     """Description for help"""
@@ -125,9 +123,8 @@ class Command:
             print(self._help.render_help(self))
             exit()
 
-
         # Shrink requested parameters
-        for argument, name in [(self.parameters.get(a), a) for a in self.parameters]:
+        for argument in [self.parameters.get(a) for a in self.parameters]:
             args = argument.pass_args(args)
 
         # Save cleaned values

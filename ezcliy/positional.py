@@ -4,9 +4,7 @@ from ezcliy.exceptions import MissingPositional
 
 
 class Positional:
-    """
-    Asign value (by source order) to object, allows asking for value or provide default one.
-    """
+    """Asign value (by source order) to object, allows asking for value or provide default one."""
     value: str = None
     """Fetched value by positional"""
 

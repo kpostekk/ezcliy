@@ -4,12 +4,12 @@ A hassle-free framework for creating command line tools
 ## Install
 
 from PyPi
-```
+```shell
 pip3 install ezcliy
 ```
 
 or from directly from Github
-```
+```shell
 pip3 install git+https://github.com/kpostekk/ezcliy.git
 ```
 

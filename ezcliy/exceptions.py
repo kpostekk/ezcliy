@@ -1,14 +1,10 @@
 class MessageableException(Exception):
-    """
-    Base class for user related errors.
-    """
+    """Base class for user related errors."""
     message: str
 
 
 class MissingPositional(MessageableException):
-    """
-    Raised when user forgets to pass positional.
-    """
+    """Raised when user forgets to pass positional."""
 
     def __init__(self, positional, position):
         """
@@ -22,9 +18,7 @@ class MissingPositional(MessageableException):
 
 
 class TooManyValues(MessageableException):
-    """
-    Raised when user passes to many arguments. Require ``only_positionals = True`` in a ``Command`` class
-    """
+    """Raised when user passes to many arguments. Require ``only_positionals = True`` in a ``Command`` class"""
 
     def __init__(self, values, expected_len):
         """

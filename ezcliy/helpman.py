@@ -31,7 +31,7 @@ class HelpRenderer:
             for pos in self.command.positionals:
                 fline += f' [{pos.name}]'
         if not self.command.restrict_to_positionals_only:
-            fline += f' [VALUES...]'
+            fline += ' [VALUES...]'
 
         if self.command.parameters:
             fline += ' [PARAMETERS]'

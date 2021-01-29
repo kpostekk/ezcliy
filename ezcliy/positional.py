@@ -23,6 +23,8 @@ class Positional:
             if self.ask_if_missing:
                 self.value = input(self.ask_if_missing + ": ").strip()
             elif self.optional:
+                if not isinstance(self.optional, bool):
+                    self.value = self.optional
                 pass
             else:
                 raise MissingPositional(self, position)

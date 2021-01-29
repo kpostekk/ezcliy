@@ -1,39 +1,37 @@
-import json
-
 import pytest
 from _pytest.capture import CaptureFixture
 
 from ezcliy import Command, Flag, Positional, KeyVal
 
 
-def test_flags(capsys: CaptureFixture[str]):
+def test_flags():
     class TestingCommand(Command):
         a = Flag('-a', '--aaa')
         v = Flag('-v')
+        u = Flag('-u')
 
         def invoke(self):
-            if self.a:
-                print(len(self.values), end='')
+            assert bool(self.a) is True
+            assert bool(self.v) is True
+            assert bool(self.u) is False
 
     TestingCommand().entry('-a', '--aaa', '-v', '-t')
-    capt = capsys.readouterr()
-    assert capt.out == '0'
 
 
-def test_keyvals(capsys: CaptureFixture[str]):
+def test_keyvals():
     class TestingCommand(Command):
         a = KeyVal('-a')
         b = KeyVal('-b')
 
         def invoke(self):
-            print(self.a, end='')
+            assert int(self.a) == 2137
+            assert self.a.values == ['2137', '1337']
+            assert self.b.value is None
 
     TestingCommand().entry('-a', '2137', '-a', '1337', '-b')
-    capt = capsys.readouterr()
-    assert capt.out == '2137'
 
 
-def test_simple_subcmd(capsys: CaptureFixture[str]):
+def test_simple_subcmd():
     class SpecialCommand(Command):
         root_flag = Flag('-o')
 
@@ -46,20 +44,15 @@ def test_simple_subcmd(capsys: CaptureFixture[str]):
             restrict_to_positionals_only = True
 
             def invoke(self):
-                print(
-                    json.dumps(
-                        [
-                            self.inner_pos.value,
-                            self.root_flag.value,
-                            self.inner_flag.value,
-                            self.inner_kv.value
-                        ]
-                    ), end=''
-                )
+                assert bool(self.root_flag) is True
+                assert bool(self.inner_flag) is True
+                assert str(self.inner_pos) == 'pytest is fun'
+                assert int(self.inner_kv) == 420
+
+        def invoke(self):
+            assert bool(self.root_flag) is True
 
     SpecialCommand().entry('sub', 'pytest is fun', '-o', '-i', '--ik', '420')
-    capt = capsys.readouterr()
-    assert capt.out == json.dumps(['pytest is fun', True, True, '420'])
 
 
 def test_help_renderer():
@@ -69,7 +62,7 @@ def test_help_renderer():
         pos_c = Positional('ccc')
 
         def invoke(self):
-            print('AAAAAAAAA')
+            ...
 
         class OtherCommand(Command):
             name = 'oocc'

@@ -10,8 +10,8 @@ def test_coro(capsys: CaptureFixture[str]):
         wait = KeyVal('-w', default=60)
 
         async def invoke(self):
-            await sleep(float(self.wait.value))
-            print(self.wait.value)
+            await sleep(float(self.wait))
+            print(self.wait)
 
     TestingCommand().entry('-w', '0.1')
     capt = capsys.readouterr()

@@ -13,6 +13,8 @@ wheel = "*"
 pytest = "*"
 pytest-pycharm = "*"
 pipenv-setup = "*"
+twine = "*"
+coverage = "*"
 
 [requires]
 python_full_version = "3.9"

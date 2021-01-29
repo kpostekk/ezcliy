@@ -13,8 +13,8 @@ setup(
     version=__version__,
     packages=["ezcliy"],
     project_urls={
-        'Repository': 'https://github.com/kpostekk/ezcliy/',
-        'Docs': 'https://ezcliy.readthedocs.io/en/latest/'
+        "Repository": "https://github.com/kpostekk/ezcliy/",
+        "Docs": "https://ezcliy.readthedocs.io/en/latest/",
     },
     url="https://github.com/kpostekk/ezcliy",
     license="Apache",
@@ -30,5 +30,5 @@ setup(
     ],
     long_description=readme(),
     long_description_content_type="text/markdown",
-    python_requires=">=3.9"
+    python_requires=">=3.9",
 )

@@ -67,7 +67,7 @@ def test_help_renderer():
         class OtherCommand(Command):
             name = 'oocc'
 
-    help_str = SpecialCommand().help.render_help(SpecialCommand())
+    help_str = SpecialCommand()._helpman.render_help(SpecialCommand())
     assert '-a' in help_str
     assert '-b' in help_str
     assert 'ccc' in help_str

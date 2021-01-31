@@ -98,7 +98,7 @@ class Command:
     def __help_check(self):
         if self._help:
             print(self._help.render_help(self))
-            exit()
+            sys.exit()
 
         if len([p for p in self.positionals if p is not None]):
             return
@@ -121,7 +121,7 @@ class Command:
         # Special help check
         if not len(args) and not self.allow_empty_calls:
             print(self._help.render_help(self))
-            exit()
+            sys.exit()
 
         # Shrink requested parameters
         for argument in [self.parameters.get(a) for a in self.parameters]:

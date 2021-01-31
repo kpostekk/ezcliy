@@ -32,7 +32,7 @@ class Command:
     allow_empty_calls = False
     """If true, will not print help when command is issued without parameters"""
 
-    _help: Helpman = None
+    help: Helpman = None
     """Object that handles --help, it's just a powerful flag instance"""
 
     def __init__(self):
@@ -40,7 +40,7 @@ class Command:
             self.name = self.__class__.__name__.lower()
         if self.description is None:
             self.description = f'There is not description for {self.name}'
-        self._help = Helpman()
+        self.help = Helpman()
         self.__subcommand_issued = None
 
     @property
@@ -80,7 +80,7 @@ class Command:
         :return: All declared parameters as name-parameter dict
         :rtype: dict[str, Parameter]
         """
-        parameters = {'help': self._help}
+        parameters = {'help': self.help}
         for name, param in [(n, p) for n, p in self.__class__.__dict__.items() if isinstance(p, Parameter)]:
             parameters.update({name: param})
         return parameters
@@ -96,8 +96,8 @@ class Command:
         return [p for p in self.__class__.__dict__.values() if isinstance(p, Positional)]
 
     def __help_check(self):
-        if self._help:
-            print(self._help.render_help(self))
+        if self.help:
+            print(self.help.render_help(self))
             sys.exit()
 
         if len([p for p in self.positionals if p is not None]):
@@ -120,7 +120,7 @@ class Command:
 
         # Special help check
         if not len(args) and not self.allow_empty_calls:
-            print(self._help.render_help(self))
+            print(self.help.render_help(self))
             sys.exit()
 
         # Shrink requested parameters
@@ -142,7 +142,7 @@ class Command:
                 # Checks
                 self.__restriction_check()
                 # Invoke, has args, first is subcommand
-                if not self._help:
+                if not self.help:
                     self.__invoke_handler()
                 # Prepare subcommand
                 cmd: Command = self.commands.get(cmd_name)()

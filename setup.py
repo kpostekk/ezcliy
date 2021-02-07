@@ -11,7 +11,7 @@ setup(
         "colorama>=0.4.0", "pyyaml>=5.0.0"
     ],
     name="ezcliy",
-    version="0.2.1b3",
+    version="0.2.1",
     packages=["ezcliy"],
     project_urls={
         "Repository": "https://github.com/kpostekk/ezcliy/",

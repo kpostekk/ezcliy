@@ -86,7 +86,7 @@ class KeyVal(Parameter):
         self.values = list(regex_match)
 
         # Remove acquired values
-        remove_tag = '<removeremoveremove>'
+        remove_tag = str(uuid.uuid4()) * 2  # Provides true uniqueness
         h = user_args.copy()
         for i, arg in enumerate(h.copy()):
             if arg == self.key:

@@ -84,7 +84,8 @@ class Command:
         :rtype: dict[str, Parameter]
         """
         parameters = {'_helpman': self._helpman}
-        for name, param in [(n, p) for n, p in (self.__class__.__dict__ | self.__dict__).items()  if isinstance(p, Parameter)]:
+        for name, param in [(n, p) for n, p in (self.__class__.__dict__ | self.__dict__).items() if
+                            isinstance(p, Parameter)]:
             parameters.update({name: param})
         return parameters
 

@@ -43,6 +43,9 @@ class Command:
         self._helpman = Helpman()
         self.__subcommand_issued = None
 
+    def __repr__(self):
+        return f'<Command {self.name}>'
+
     @property
     @cache
     def commands(self) -> dict[str, type]:
@@ -81,7 +84,7 @@ class Command:
         :rtype: dict[str, Parameter]
         """
         parameters = {'_helpman': self._helpman}
-        for name, param in [(n, p) for n, p in self.__class__.__dict__.items() if isinstance(p, Parameter)]:
+        for name, param in [(n, p) for n, p in (self.__class__.__dict__ | self.__dict__).items()  if isinstance(p, Parameter)]:
             parameters.update({name: param})
         return parameters
 
@@ -107,6 +110,14 @@ class Command:
         if len(self.values) != len(self.positionals) and self.restrict_to_positionals_only:
             raise TooManyValues(self.values, len(self.positionals))
 
+    def __load_predecessors_params(self):
+        if self._legacy.get('_helpman', False):
+            # noinspection PyTypeChecker
+            self._helpman = self._legacy['_helpman']
+        for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
+            if n in self._legacy:
+                self.__setattr__(n, self._legacy.get(n))
+
     def dispatch(self, args: list[str]):
         """
         The magic spaghetti of framework.
@@ -114,12 +125,7 @@ class Command:
         :param args: list of arguments to process
         """
         # Loading predecessor's parameters
-        if self._legacy.get('_helpman', False):
-            # noinspection PyTypeChecker
-            self._helpman = self._legacy['_helpman']
-        for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
-            if n in self._legacy:
-                self.__setattr__(n, self._legacy.get(n))
+        self.__load_predecessors_params()
 
         # Special help check
         if not len(args) and not self.allow_empty_calls:

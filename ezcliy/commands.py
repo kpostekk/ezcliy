@@ -133,7 +133,7 @@ class Command:
             sys.exit()
 
         # Shrink requested parameters
-        for argument in [self.parameters.get(a) for a in self.parameters]:
+        for argument in [p for p in self.parameters.values() if not p.lock]:
             args = argument.pass_args(args)
 
         # Save cleaned values

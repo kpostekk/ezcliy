@@ -1,4 +1,5 @@
 import re
+import uuid
 
 
 class Parameter:
@@ -6,6 +7,8 @@ class Parameter:
     """Value of parameter"""
     description: str = None
     """Description of param"""
+
+    lock: bool = False
 
     def pass_args(self, user_args: list[str]) -> list[str]:
         """
@@ -40,13 +43,16 @@ class Flag(Parameter):
         self.aliases = aliases
 
     def pass_args(self, user_args: list[str]) -> list[str]:
+        if self.lock:
+            return user_args
         shrinked_args = [arg for arg in user_args if arg not in self.aliases]
         # noinspection PyTypeChecker
         self.value = len(shrinked_args) != len(user_args)
+        self.lock = True
         return shrinked_args
 
     def __repr__(self):
-        return f'<Flag {" ".join(self.aliases)} has value {self.value}>'
+        return f'<Flag {" ".join(self.aliases)} has value {self.value} ({self.lock=}))>'
 
 
 class KeyVal(Parameter):
@@ -69,6 +75,8 @@ class KeyVal(Parameter):
             return None
 
     def pass_args(self, user_args: list[str]) -> list[str]:
+        if self.lock:
+            return user_args  # Todo add lock decorator
         regex_rule = r'{}[=|\ ]\"?([^-][\w.,]*)\"?'.format(self.key)
         regex_match = re.findall(regex_rule, ' '.join(user_args))
 
@@ -90,8 +98,8 @@ class KeyVal(Parameter):
                 if arg in self.values and h[i - 1] == remove_tag:
                     h[i] = remove_tag
         h = [k for k in h if k != remove_tag]
-
+        self.lock = True
         return h
 
     def __repr__(self):
-        return f'<Value of {self.key} has value {self.value}>'
+        return f'<Value of {self.key} has value {self.value} ({self.lock=})>'

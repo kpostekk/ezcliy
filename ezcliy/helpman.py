@@ -43,7 +43,7 @@ class HelpRenderer:
         for row in rows:
             line = f'    {row[0]}'
             if row[1] is not None:
-                line += f' - {row[1]}'
+                line += f' － {row[1]}'
             lines.append(line)
         return '\n'.join(lines)
 
@@ -55,7 +55,6 @@ class HelpRenderer:
 class Helpman(Flag):
     def __init__(self):
         super().__init__('--help')
-        self.description = 'no description has been provided'
 
     def pass_args(self, user_args: list[str]) -> list[str]:
         if self.value:
@@ -86,6 +85,6 @@ class Helpman(Flag):
             for flag in [f for f in command.parameters.values() if isinstance(f, Flag)]:
                 hr.add('flags', ' '.join(flag.aliases), flag.description)
             for keyval in [kv for kv in command.parameters.values() if isinstance(kv, KeyVal)]:
-                hr.add('keyed values', keyval.key + ' (value)', keyval.description)
+                hr.add('keyed values', keyval.key, keyval.description)
 
-        return hr.__str__()
+        return str(hr)

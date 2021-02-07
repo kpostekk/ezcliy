@@ -114,9 +114,9 @@ class Command:
         if self._legacy.get('_helpman', False):
             # noinspection PyTypeChecker
             self._helpman = self._legacy['_helpman']
-        for n in [name for name, t in self.__annotations__.items() if isinstance(t, type) if issubclass(t, Parameter)]:
-            if n in self._legacy:
-                self.__setattr__(n, self._legacy.get(n))
+        for n, param in self._legacy.items():
+            if n in self.__annotations__ | self.__class__.__annotations__:
+                self.__setattr__(n, param)
 
     def dispatch(self, args: list[str]):
         """

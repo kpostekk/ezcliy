@@ -26,7 +26,7 @@ def test_tmv(capsys: CaptureFixture[str]):
 
     SpecialCommand().entry('a', 'b')
     capt = capsys.readouterr()
-    assert 'error: TooManyValues' in capt.out
+    assert 'TooManyValues:' in capt.out
 
 
 def test_optional():

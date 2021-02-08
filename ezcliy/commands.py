@@ -2,10 +2,7 @@ import asyncio
 import inspect
 import sys
 from functools import cache
-
-import colorama
-import yaml
-
+from sty import ef, fg
 from ezcliy.exceptions import MessageableException, TooManyValues
 from ezcliy.helpman import Helpman
 from ezcliy.parameters import Parameter
@@ -189,12 +186,7 @@ class Command:
         try:
             self.dispatch(list(args))
         except MessageableException as mex:
-            print(colorama.Fore.RED +
-                  yaml.safe_dump({
-                      'error': mex.__class__.__name__,
-                      'message': mex.message
-                  }) + colorama.Style.RESET_ALL
-                  )
+            print(ef.italic + fg.red + f'{mex.__class__.__name__}: {mex.message}' + fg.rs + ef.rs)
 
     def cli_entry(self):
         """

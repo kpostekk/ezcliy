@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from typing import Optional
 
-from colorama import Style, Back, Fore
+from sty import ef
 
 from ezcliy.parameters import Flag, KeyVal
 
@@ -22,7 +22,7 @@ class HelpRenderer:
 
     @property
     def firstline(self):
-        fline = Back.WHITE + Fore.BLACK + 'Usage:' + Style.RESET_ALL + f' {self.command.name}'
+        fline = ef.bold + 'Usage:' + ef.rs + f' {self.command.name}'
 
         if self.command.commands:
             fline += ' [COMMANDS]'
@@ -39,7 +39,7 @@ class HelpRenderer:
 
     @staticmethod
     def render_section(section_name: str, rows: list[tuple[str, Optional[str]]]):
-        lines = [Style.BRIGHT + f'{section_name.strip().capitalize()}:' + Style.RESET_ALL]
+        lines = [ef.bold + f'{section_name.strip().capitalize()}:' + ef.rs]
         for row in rows:
             line = f'    {row[0]}'
             if row[1] is not None:

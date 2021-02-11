@@ -33,9 +33,10 @@ project_urls = {Repository = "https://github.com/kpostekk/ezcliy/", Docs = "http
 ezcliy = ["meta.json"]
 
 [scripts]
-build = "python setup.py bdist_wheel sdist build"
+build = "python setup.py bdist_wheel bdist_egg build"
 slock = "pipenv-pub lock"
 stamp = "pipenv-pub stamp"
+pub = "pipenv-pub"
 
 [pipenv]
 allow_prereleases = true

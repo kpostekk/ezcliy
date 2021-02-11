@@ -26,7 +26,7 @@ class Command:
     restrict_to_positionals_only = False
     """If true, allow only values referenced as positionals"""
 
-    allow_empty_calls = False
+    allow_empty_calls = True
     """If true, will not print help when command is issued without parameters"""
 
     _helpman: Helpman = None

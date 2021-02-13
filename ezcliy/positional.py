@@ -25,7 +25,6 @@ class Positional:
             elif self.optional:
                 if not isinstance(self.optional, bool):
                     self.value = self.optional
-                pass
             else:
                 raise MissingPositional(self, position)
 

@@ -11,6 +11,7 @@ from ezcliy.positional import Positional
 
 class Command:
     """Base class for creating commands. You probably will override this class"""
+
     name: str = None
     """Name of command"""
 

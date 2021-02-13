@@ -1,5 +1,6 @@
 class MessageableException(Exception):
     """Base class for user related errors."""
+
     message: str
 
 

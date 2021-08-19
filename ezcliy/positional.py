@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from ezcliy.exceptions import MissingPositional
 
@@ -11,7 +11,7 @@ class Positional:
     description: str = None
     """Description for help"""
 
-    def __init__(self, name: str, ask_if_missing: Optional[str] = None, optional=False):
+    def __init__(self, name: str, ask_if_missing: Optional[str] = None, optional: Optional[Any] = None):
         self.name = name
         self.ask_if_missing = ask_if_missing
         self.optional = optional
@@ -22,9 +22,8 @@ class Positional:
         except IndexError:
             if self.ask_if_missing:
                 self.value = input(self.ask_if_missing + ": ").strip()
-            elif self.optional:
-                if not isinstance(self.optional, bool):
-                    self.value = self.optional
+            elif self.optional is not None:
+                self.value = self.optional
             else:
                 raise MissingPositional(self, position)
 

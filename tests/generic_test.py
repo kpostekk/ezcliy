@@ -41,7 +41,7 @@ def test_simple_subcmd():
             inner_kv = KeyVal('--ik', default='69')
             root_flag: Flag
             inner_flag = Flag('-i')
-            restrict_to_positionals_only = True
+            require_all_defined_positionals = True
 
             def invoke(self):
                 assert bool(self.root_flag) is True

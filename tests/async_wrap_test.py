@@ -28,7 +28,7 @@ def test_subcoro(capsys: CaptureFixture[str]):
 
         class TestingSubCommand(Command):
             name = 'tsc'
-            allow_empty_calls = True
+            none_args_will_not_trigger_help = True
 
             async def invoke(self):
                 await sleep(0.2)

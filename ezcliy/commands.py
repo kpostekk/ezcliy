@@ -3,7 +3,7 @@ import inspect
 import sys
 from functools import cache
 from sty import ef, fg
-from ezcliy.exceptions import MessageableException, TooManyValues
+from ezcliy.exceptions import MessageableException, UnexceptedNumberOfValues
 from ezcliy.helpman import Helpman
 from ezcliy.parameters import Parameter
 from ezcliy.positional import Positional
@@ -24,14 +24,14 @@ class Command:
     _legacy: dict[str, Parameter] = {}
     """Parameters inherited after previous command"""
 
-    restrict_to_positionals_only = False
+    require_all_defined_positionals = False
     """If true, allow only values referenced as positionals"""
 
-    allow_empty_calls = True
+    none_args_will_not_trigger_help = True
     """If true, will not print help when command is issued without parameters"""
 
     _helpman: Helpman = None
-    """Object that handles --help, it's just a powerful flag instance"""
+    """Object that handles --help, it's just a god tier flag instance"""
 
     def __init__(self):
         if self.name is None:
@@ -39,6 +39,12 @@ class Command:
         if self.description is None:
             self.description = f'There is not description for {self.name}'
         self._helpman = Helpman()
+
+        if self.none_args_will_not_trigger_help:
+            self._helpman.description = 'Prints help.'
+        else:
+            self._helpman.description = 'Prints help, also shows when no args were passed.'
+
         self.__subcommand_issued = None
 
     def __repr__(self):
@@ -106,8 +112,8 @@ class Command:
             return
 
     def __restriction_check(self):
-        if len(self.values) != len(self.positionals) and self.restrict_to_positionals_only:
-            raise TooManyValues(self.values, len(self.positionals))
+        if len(self.values) != len(self.positionals) and self.require_all_defined_positionals:
+            raise UnexceptedNumberOfValues(self.values, len(self.positionals))
 
     def __load_predecessors_params(self):
         if self._legacy.get('_helpman', False):
@@ -116,6 +122,10 @@ class Command:
         for n, param in self._legacy.items():
             if n in self.__annotations__ | self.__class__.__annotations__:
                 self.__setattr__(n, param)
+
+    def __pass_values_to_positionals(self):
+        for i, p in enumerate(self.positionals):
+            p.pass_values(self.values, i)
 
     def dispatch(self, args: list[str]):
         """
@@ -127,7 +137,7 @@ class Command:
         self.__load_predecessors_params()
 
         # Special help check
-        if not len(args) and not self.allow_empty_calls:
+        if not len(args) and not self.none_args_will_not_trigger_help:
             print(self._helpman.render_help(self))
             sys.exit()
 
@@ -137,10 +147,6 @@ class Command:
 
         # Save cleaned values
         self.values = [arg for arg in args if not arg.startswith('-') and arg != '']
-
-        def pass_values_to_positionals():
-            for i, p in enumerate(self.positionals):
-                p.pass_values(self.values, i)
 
         # Check is first arg an command
         if len(self.values) > 0:
@@ -160,7 +166,7 @@ class Command:
 
         self.__help_check()
         self.__restriction_check()
-        pass_values_to_positionals()  # This should raise an error
+        self.__pass_values_to_positionals()  # This should raise an error
         self.__invoke_handler()  # Has no args
 
     def __invoke_handler(self):

@@ -10,7 +10,7 @@ def test_asking(capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
     class SpecialCommand(Command):
         flag_v = Flag('-v')
         pos_c = Positional('ccc', ask_if_missing='hmm?')
-        allow_empty_calls = True
+        none_args_will_not_trigger_help = True
 
         def invoke(self):
             assert str(self.pos_c) == 'que'
@@ -22,17 +22,17 @@ def test_asking(capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
 def test_tmv(capsys: CaptureFixture[str]):
     class SpecialCommand(Command):
         pos = Positional('pos')
-        restrict_to_positionals_only = True
+        require_all_defined_positionals = True
 
     SpecialCommand().entry('a', 'b')
     capt = capsys.readouterr()
-    assert 'TooManyValues:' in capt.out
+    assert 'UnexceptedNumberOfValues:' in capt.out
 
 
 def test_optional():
     class SpecialCommand(Command):
         pos = Positional('pos', optional='hehehehe')
-        allow_empty_calls = True
+        none_args_will_not_trigger_help = True
 
         def invoke(self):
             assert self.pos.value == 'hehehehe'

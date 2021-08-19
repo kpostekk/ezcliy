@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from typing import Optional
 
-from sty import ef
+from sty import ef, fg, rs
 
 from ezcliy.parameters import Flag, KeyVal
 
@@ -30,7 +30,7 @@ class HelpRenderer:
         if self.command.positionals:
             for pos in self.command.positionals:
                 fline += f' [{pos.name}]'
-        if not self.command.restrict_to_positionals_only:
+        if not self.command.require_all_defined_positionals:
             fline += ' [VALUES...]'
 
         if self.command.parameters:
@@ -41,9 +41,9 @@ class HelpRenderer:
     def render_section(section_name: str, rows: list[tuple[str, Optional[str]]]):
         lines = [ef.bold + f'{section_name.strip().capitalize()}:' + ef.rs]
         for row in rows:
-            line = f'    {row[0]}'
+            line = f'    {fg.cyan + row[0] + rs.fg}'
             if row[1] is not None:
-                line += f' － {row[1]}'
+                line += f' -> {row[1]}'
             lines.append(line)
         return '\n'.join(lines)
 

@@ -24,7 +24,7 @@ version = "0.2.2"
 author = "Krystian Postek"
 author_email = "krystian@postek.eu"
 description = "Framework for creating CLI tools"
-license = "Apache"
+license = "MIT"
 url = "https://github.com/kpostekk/ezcliy"
 packages = ["ezcliy"]
 project_urls = {Repository = "https://github.com/kpostekk/ezcliy/", Docs = "https://ezcliy.readthedocs.io/en/latest/"}

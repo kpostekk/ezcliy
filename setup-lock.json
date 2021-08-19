@@ -1,10 +1,10 @@
 {
   "name": "ezcliy",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "author": "Krystian Postek",
   "author_email": "krystian@postek.eu",
   "description": "Framework for creating CLI tools",
-  "license": "Apache",
+  "license": "MIT",
   "url": "https://github.com/kpostekk/ezcliy",
   "packages": [
     "ezcliy"

@@ -3,13 +3,13 @@ Parameters
 .. py:currentmodule:: ezcliy.parameters
 
 .. autoclass:: Parameter
-    :members:
+    :special-members: __init__
 
 .. autoclass:: Flag
-    :members:
+    :special-members: __init__
 
 .. autoclass:: KeyVal
-    :members:
+    :special-members: __init__
 
 Positionals
 ============

@@ -20,5 +20,5 @@ Ez cliy has built-in help generator. It can be invoked by typing ``--help``. Als
 
 .. tip::
 
-    You can change that behaviour by setting :attr:`ezcliy.Command.allow_empty_calls` on ``True``
+    You can change that behaviour by setting :attr:`Command.none_args_will_not_trigger_help` on ``True``
 

@@ -3,6 +3,10 @@ import uuid
 
 
 class Parameter:
+    """
+    Abstract class for creating parameters for cli invoke
+    """
+
     value: str = None
     """Value of parameter"""
     description: str = None
@@ -33,6 +37,8 @@ class Parameter:
 
 
 class Flag(Parameter):
+    """Simple boolean switch (examples: -v or --verbose)"""
+
     value: bool = False
 
     def __init__(self, *aliases: str):
@@ -56,6 +62,8 @@ class Flag(Parameter):
 
 
 class KeyVal(Parameter):
+    """Pass values for invcation (examples: -c=90 or --count=90)"""
+
     values: list[str] = []
 
     def __init__(self, keyname: str, default=None):

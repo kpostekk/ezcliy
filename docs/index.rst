@@ -29,6 +29,12 @@ Install
 
 .. code-block::
 
+   pip3 install ezcliy
+
+or...
+
+.. code-block::
+
    pip3 install git+https://github.com/kpostekk/ezcliy.git
 
 Example

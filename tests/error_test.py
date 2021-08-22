@@ -2,6 +2,7 @@ from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
 
 from ezcliy import *
+from ezcliy.exceptions import UnexceptedNumberOfValues
 
 
 def test_asking(capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
@@ -24,9 +25,13 @@ def test_tmv(capsys: CaptureFixture[str]):
         pos = Positional('pos')
         require_all_defined_positionals = True
 
-    SpecialCommand().entry('a', 'b')
-    capt = capsys.readouterr()
-    assert 'UnexceptedNumberOfValues:' in capt.out
+    try:
+        SpecialCommand().entry('a', 'b')
+        errored = False
+    except UnexceptedNumberOfValues as err:
+        errored = True
+
+    assert errored
 
 
 def test_optional():

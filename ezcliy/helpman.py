@@ -70,6 +70,9 @@ class Helpman(Flag):
         """
         hr = HelpRenderer(command)
 
+        if command.description is not None:
+            hr.add('description', command.description, None)
+
         # Get commands
         if command.commands:
             for n, c in command.commands.items():

@@ -15,6 +15,7 @@ An alternative framework for click or argparse.
    click
    command
    parameters
+   examples
 
 Features
 ---------

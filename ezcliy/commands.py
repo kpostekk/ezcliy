@@ -1,7 +1,10 @@
 import asyncio
 import inspect
+import os
 import sys
 from functools import cache
+from typing import Optional, Any
+
 from sty import ef, fg
 from ezcliy.exceptions import MessageableException, UnexceptedNumberOfValues
 from ezcliy.helpman import Helpman
@@ -36,14 +39,12 @@ class Command:
     def __init__(self):
         if self.name is None:
             self.name = self.__class__.__name__.lower()
-        if self.description is None:
-            self.description = f'There is not description for {self.name}'
         self._helpman = Helpman()
 
         if self.none_args_will_not_trigger_help:
-            self._helpman.description = 'Prints help.'
+            self._helpman.description = 'Shows help.'
         else:
-            self._helpman.description = 'Prints help, also shows when no args were passed.'
+            self._helpman.description = 'Shows help even when no arguments are passed.'
 
         self.__subcommand_issued = None
 
@@ -167,19 +168,19 @@ class Command:
         self.__help_check()
         self.__restriction_check()
         self.__pass_values_to_positionals()  # This should raise an error
-        self.__invoke_handler()  # Has no args
+        return self.__invoke_handler()  # Has no args
 
     def __invoke_handler(self):
         if inspect.iscoroutinefunction(self.invoke):
             # noinspection PyTypeChecker
-            asyncio.run(self.invoke())
+            return asyncio.run(self.invoke())
         else:
-            self.invoke()
+            return self.invoke()
 
     # Invocation
-    def invoke(self):
+    def invoke(self) -> Optional[Any]:
         """
-        The entry point for your command.
+        The entry point for your command. Can return values while being called by ``entry`` or ``cli_entry``.
         """
         ...
 
@@ -191,9 +192,10 @@ class Command:
         :param str args: list of passed arguments
         """
         try:
-            self.dispatch(list(args))
+            return self.dispatch(list(args))
         except MessageableException as mex:
             print(ef.italic + fg.red + f'{mex.__class__.__name__}: {mex.message}' + fg.rs + ef.rs)
+            exit()
 
     def cli_entry(self):
         """

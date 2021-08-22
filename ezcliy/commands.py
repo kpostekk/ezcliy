@@ -191,11 +191,7 @@ class Command:
 
         :param str args: list of passed arguments
         """
-        try:
-            return self.dispatch(list(args))
-        except MessageableException as mex:
-            print(ef.italic + fg.red + f'{mex.__class__.__name__}: {mex.message}' + fg.rs + ef.rs)
-            exit()
+        return self.dispatch(list(args))
 
     def cli_entry(self):
         """

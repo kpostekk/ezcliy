@@ -13,8 +13,6 @@ jobs:
       #   with:
       #     python-version: '3.9'
       - name: Install dependencies
-        run: |
-          pip3 install pipenv
-          pipenv install --dev
+        run: pipenv install --dev
       - name: Test using pytest
         run: pipenv run pytest

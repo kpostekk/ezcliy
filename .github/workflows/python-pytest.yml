@@ -17,4 +17,4 @@ jobs:
           pip3 install pipenv
           pipenv install --dev
       - name: Test using pytest
-        run: pytest
+        run: pipenv run pytest
